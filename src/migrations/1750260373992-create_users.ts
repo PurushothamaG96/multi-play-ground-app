@@ -8,19 +8,42 @@ export class CreateUsers1750260373992 implements MigrationInterface {
         columns: [
           {
             name: 'id',
-            type: 'serial',
+            type: 'uuid',
             isPrimary: true,
+            isUnique: true,
+            generationStrategy: 'uuid',
+            default: `extensions.uuid_generate_v4()`,
           },
           {
             name: 'email',
-            type: 'varchar',
+            type: 'text',
             isUnique: true,
             isNullable: false,
           },
           {
-            name: 'name',
-            type: 'varchar',
-            isNullable: true,
+            name: 'userName',
+            type: 'text',
+            isNullable: false,
+          },
+          {
+            name: 'password',
+            type: 'text',
+            isNullable: false,
+          },
+          {
+            name: 'userType',
+            type: 'int',
+            default: 3, // default always normal user
+          },
+          {
+            name: 'isActive',
+            type: 'boolean',
+            default: true,
+          },
+          {
+            name: 'isArchived',
+            type: 'boolean',
+            default: false,
           },
           {
             name: 'created_at',

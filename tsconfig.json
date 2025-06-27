@@ -21,5 +21,5 @@
       "@nestjs/config": ["node_modules/@nestjs/config"]
     },
     "moduleResolution": "node"
-  }
+  },
 }

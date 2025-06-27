@@ -1,0 +1,10 @@
+export enum USER_TYPE {
+  ADMIN = 1,
+  PRINCIPAL = 2,
+  TEACHER = 3,
+  STUDENT = 4,
+  PARENT = 5,
+  LIBRARIAN = 6,
+  ACCOUNTANT = 7,
+  STAFF = 8,
+}
