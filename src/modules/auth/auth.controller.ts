@@ -1,6 +1,11 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { LoginDto } from './dto/login.dto';
 import { AuthService } from './auth.service';
+import * as authExceptions from '../../exceptions/authException';
+import argon2 from 'argon2';
+import { getAuth } from 'firebase-admin/auth';
+import { ApiBody } from '@nestjs/swagger';
+import { RegisterDto } from './dto/register.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -15,12 +20,64 @@ export class AuthController {
   @Post('login')
   async login(@Body() loginDto: LoginDto) {
     // Handle login logic here
-    const { username, password, captchaToken } = loginDto;
+    const { email, password, captchaToken } = loginDto;
     // Call the auth service to perform login
 
-    const result = await this.authService.getUser(loginDto);
+    const result = await this.authService.getUser(email);
 
+    if (!result) {
+      throw authExceptions.incorrectUsernamePassword({ email, password });
+    }
     // get the email and validate with firebase
-    
+
+    const verifiedBool = await argon2.verify(result.password, password);
+    if (!verifiedBool) throw authExceptions.incorrectUsernamePassword();
+
+    const customGoogleToken = await getAuth().createCustomToken(result.email);
+
+    const { id, userName, userType } = result;
+
+    return {
+      user: {
+        id,
+        userName,
+        email,
+        userType,
+      },
+      token: customGoogleToken,
+    };
+  }
+  @ApiBody({ type: RegisterDto, description: 'User registration data' })
+  @Post('register')
+  async register(@Body() registerDto: RegisterDto) {
+    // Check if user already exists
+    const existingUser = await this.authService.getUser(registerDto.email);
+    if (existingUser) {
+      throw authExceptions.userAlreadyExists;
+    }
+
+    // Hash the password
+    const hashedPassword = await argon2.hash(registerDto.password);
+
+    // Create the user
+    const newUser = await this.authService.createUser({
+      ...registerDto,
+      password: hashedPassword,
+    });
+
+    // Generate a Firebase custom token
+    const customGoogleToken = await getAuth().createCustomToken(newUser.email);
+
+    const { id, email, userName, userType } = newUser;
+
+    return {
+      user: {
+        id,
+        userName,
+        email,
+        userType,
+      },
+      token: customGoogleToken,
+    };
   }
 }

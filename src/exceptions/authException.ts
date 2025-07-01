@@ -17,6 +17,11 @@ export const clientNotFound = new CustomHttpException(
   HttpStatus.NOT_FOUND,
 );
 
+export const userAlreadyExists = new CustomHttpException(
+  'User Already exist',
+  HttpStatus.BAD_REQUEST,
+);
+
 export const clientCompleteOnboardingFlow = new CustomHttpException(
   'Please complete your onboarding before logging in.',
   HttpStatus.PRECONDITION_REQUIRED,

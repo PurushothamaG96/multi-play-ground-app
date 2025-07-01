@@ -18,16 +18,25 @@ export class User extends Base {
     type: 'string',
     example: 'John rambo',
   })
-  @Column({ name: 'user_name', type: 'text', nullable: true })
+  @Column({ name: 'userName', type: 'text', nullable: true })
   userName: string;
 
+
   @ApiProperty({
-    name: 'userName',
+    name: 'password',
+    type: 'string',
+    example: 'ccjhqccjhgchghcfcvcv1wyttgc',
+  })
+  @Column({ name: 'password', type: 'text', nullable: true })
+  password: string;
+
+  @ApiProperty({
+    name: 'userType',
     type: 'number',
     enum: USER_TYPE,
     default: USER_TYPE.STUDENT,
     example: USER_TYPE.STUDENT,
   })
-  @Column({ name: 'user_type', type: 'int' })
+  @Column({ name: 'userType', type: 'int' })
   userType: number;
 }
