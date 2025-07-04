@@ -1,7 +1,7 @@
 import { Entity, Column } from 'typeorm';
 import { Base } from './base';
 import { ApiProperty } from '@nestjs/swagger';
-import { USER_TYPE } from 'src/interfaces/user';
+import { USER_TYPE } from '../interfaces/user';
 
 @Entity('users')
 export class User extends Base {

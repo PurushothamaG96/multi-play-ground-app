@@ -7,4 +7,5 @@ export enum USER_TYPE {
   LIBRARIAN = 6,
   ACCOUNTANT = 7,
   STAFF = 8,
+  NOT_DEFINED_YET = 9,
 }

@@ -2,7 +2,8 @@ import { Body, Controller, Post } from '@nestjs/common';
 import { LoginDto } from './dto/login.dto';
 import { AuthService } from './auth.service';
 import * as authExceptions from '../../exceptions/authException';
-import argon2 from 'argon2';
+import * as systemExceptions from '../../exceptions/systemException';
+import * as argon2 from 'argon2';
 import { getAuth } from 'firebase-admin/auth';
 import { ApiBody } from '@nestjs/swagger';
 import { RegisterDto } from './dto/register.dto';
@@ -20,7 +21,7 @@ export class AuthController {
   @Post('login')
   async login(@Body() loginDto: LoginDto) {
     // Handle login logic here
-    const { email, password, captchaToken } = loginDto;
+    const { email, password } = loginDto;
     // Call the auth service to perform login
 
     const result = await this.authService.getUser(email);
@@ -47,9 +48,29 @@ export class AuthController {
       token: customGoogleToken,
     };
   }
+
   @ApiBody({ type: RegisterDto, description: 'User registration data' })
   @Post('register')
   async register(@Body() registerDto: RegisterDto) {
+    // Check Firebase Auth for existing email
+    try {
+      const existingFirebaseUser = await getAuth().getUserByEmail(
+        registerDto.email,
+      );
+
+      // If found, assume registration should not proceed
+      if (existingFirebaseUser) {
+        throw authExceptions.userAlreadyExists;
+      }
+    } catch (error) {
+      // If user not found in Firebase, continue registration
+      if (error.code !== 'auth/user-not-found') {
+        // Unexpected Firebase error
+        throw systemExceptions.internalServerErrorException(
+          'Firebase error: ' + error.message,
+        );
+      }
+    }
     // Check if user already exists
     const existingUser = await this.authService.getUser(registerDto.email);
     if (existingUser) {
@@ -63,6 +84,12 @@ export class AuthController {
     const newUser = await this.authService.createUser({
       ...registerDto,
       password: hashedPassword,
+    });
+
+    await getAuth().createUser({
+      email: newUser.email,
+      password: registerDto.password,
+      displayName: newUser.userName,
     });
 
     // Generate a Firebase custom token

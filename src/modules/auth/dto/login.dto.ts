@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsString } from 'class-validator';
+import { IsEmail, IsOptional, IsString } from 'class-validator';
 
 export class LoginDto {
   @IsString()
@@ -21,12 +21,13 @@ export class LoginDto {
   })
   password: string;
 
-  @IsString()
-  @ApiProperty({
-    name: 'captchaToken',
-    type: 'string',
-    example: 'eyJhbGciOiJSUzI1NiIsImtpZCI6Ijg3YzFlN2Y4MDAzNGJiYzgxYjhmM',
-    required: true,
-  })
-  captchaToken: string;
+//   @ApiProperty({
+//     name: 'captchaToken',
+//     type: 'string',
+//     example: 'eyJhbGciOiJSUzI1NiIsImtpZCI6Ijg3YzFlN2Y4MDAzNGJiYzgxYjhmM',
+//     required: true,
+//   })
+//   @IsOptional()
+//   @IsString()
+//   captchaToken: string;
 }

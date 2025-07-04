@@ -12,7 +12,7 @@ export class CreateUsers1750260373992 implements MigrationInterface {
             isPrimary: true,
             isUnique: true,
             generationStrategy: 'uuid',
-            default: `extensions.uuid_generate_v4()`,
+            default: `uuid_generate_v4()`,
           },
           {
             name: 'email',
@@ -33,7 +33,7 @@ export class CreateUsers1750260373992 implements MigrationInterface {
           {
             name: 'userType',
             type: 'int',
-            default: 3, // default always normal user
+            default: 9, // default always normal user
           },
           {
             name: 'isActive',
