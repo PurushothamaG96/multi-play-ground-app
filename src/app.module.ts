@@ -5,6 +5,7 @@ import { AppService } from './app.service';
 import { AppController } from './app.controller';
 import envConfiguration from './config/configuration';
 import { AuthModule } from './modules/auth/auth.module';
+import { ParentStudentModule } from './modules/parent-student/parent-student.module';
 
 @Module({
   imports: [
@@ -16,14 +17,20 @@ import { AuthModule } from './modules/auth/auth.module';
     TypeOrmModule.forRoot({
       type: 'postgres',
       url: process.env.DATABASE_URL,
-      ssl: {
-        rejectUnauthorized: false,
-      },
+      // ssl: {
+      //   rejectUnauthorized: false,
+      // },
+
+      ssl:
+        process.env.DATABASE_SSL === 'true'
+          ? { rejectUnauthorized: false }
+          : false,
       entities: [__dirname + '/entity/**/*.entity{.ts,.js}'],
       autoLoadEntities: true,
       synchronize: false,
     }),
     AuthModule,
+    ParentStudentModule,
   ],
   controllers: [AppController],
   providers: [AppService],

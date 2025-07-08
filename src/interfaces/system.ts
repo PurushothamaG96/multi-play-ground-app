@@ -20,5 +20,17 @@ export interface IExceptionPayload {
   stack?: any;
   data?: any;
   metadata?: any;
-  [key: string]: unknown; 
+  [key: string]: unknown;
+}
+
+export enum PARENT_RELATION {
+  FATHER = 'father',
+  MOTHER = 'mother',
+  GUARDIAN = 'guardian',
+}
+
+export enum GENDER {
+  MALE = 1,
+  FEMALE = 2,
+  OTHER = 3,
 }
