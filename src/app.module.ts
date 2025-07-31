@@ -12,7 +12,7 @@ import { UserModule } from './modules/user/user.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: ['.env', '.env.local', '.env.production'],
+      envFilePath: ['.env.local', '.env.production'],
       load: [envConfiguration],
     }),
     TypeOrmModule.forRoot({
