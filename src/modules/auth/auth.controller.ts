@@ -66,7 +66,7 @@ export class AuthController {
       // If user not found in Firebase, continue registration
       if (error.code !== 'auth/user-not-found') {
         // Unexpected Firebase error
-        throw systemExceptions.internalServerErrorException(
+        throw systemExceptions.userAlreadyExists(
           'Firebase error: ' + error.message,
         );
       }

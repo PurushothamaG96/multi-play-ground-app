@@ -6,6 +6,7 @@ import { AppController } from './app.controller';
 import envConfiguration from './config/configuration';
 import { AuthModule } from './modules/auth/auth.module';
 import { ParentStudentModule } from './modules/parent-student/parent-student.module';
+import { UserModule } from './modules/user/user.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { ParentStudentModule } from './modules/parent-student/parent-student.mod
     }),
     AuthModule,
     ParentStudentModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],
