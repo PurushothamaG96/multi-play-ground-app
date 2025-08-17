@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Like } from 'typeorm';
+import { Repository, Like, FindOptionsWhere } from 'typeorm';
 import { User } from '../../entities/users.entity';
 import { getAuth } from 'firebase-admin/auth';
 import { CreateUserDto } from './dto/createUser.dto';
@@ -30,12 +30,19 @@ export class UserService {
     page = 1,
     limit = 10,
   }: FetchUsersDto) {
-    const where: any = {};
+    const where: FindOptionsWhere<User> = {};
     if (email) where.email = Like(`%${email}%`);
     if (userName) where.userName = Like(`%${userName}%`);
 
     const [users, total] = await this.userRepository.findAndCount({
       where,
+      select: {
+        id: true,
+        userName: true,
+        userType: true,
+        email: true,
+        createdAt: true,
+      },
       skip: (page - 1) * limit,
       take: limit,
     });

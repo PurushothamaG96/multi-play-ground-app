@@ -22,7 +22,7 @@ async function bootstrap() {
   );
 
   app.enableCors({
-    origin: 'http://localhost:3000', // allow frontend origin
+    origin: [/^http:\/\/localhost:\d+$/, /^https:\/\/localhost:\d+$/],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     credentials: true, // if you're using cookies or auth headers
   });

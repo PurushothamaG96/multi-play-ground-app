@@ -1,9 +1,8 @@
 version: '3.8'
-
 services:
   db:
     image: postgres:17
-    container_name: local-postgres
+    container_name: postgres
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 1234
@@ -13,22 +12,5 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     restart: always
-
-  app:
-    container_name: nest-app
-    build:
-      context: .
-      target: development
-    ports:
-      - "3000:3000"
-    volumes:
-      - .:/app
-      - /app/node_modules
-    env_file:
-      - .env.local
-    depends_on:
-      - db
-    restart: unless-stopped
-
 volumes:
   pgdata:

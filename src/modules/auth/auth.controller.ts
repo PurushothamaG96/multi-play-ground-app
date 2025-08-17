@@ -92,19 +92,6 @@ export class AuthController {
       displayName: newUser.userName,
     });
 
-    // Generate a Firebase custom token
-    const customGoogleToken = await getAuth().createCustomToken(newUser.email);
-
-    const { id, email, userName, userType } = newUser;
-
-    return {
-      user: {
-        id,
-        userName,
-        email,
-        userType,
-      },
-      token: customGoogleToken,
-    };
+    return { message: true };
   }
 }

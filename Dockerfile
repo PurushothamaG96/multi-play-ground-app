@@ -26,7 +26,7 @@ RUN npm install --omit=dev
 # Copy built app
 COPY --from=build /app/dist ./dist
 COPY tsconfig.build.json ./
-COPY .env ./
+COPY .env.production .env.local
 
 ENV NODE_ENV=production
 CMD ["node", "dist/main"]
