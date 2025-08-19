@@ -55,75 +55,123 @@ export class UserService {
     };
   }
 
-  async getUserById(id: string) {
-    return this.userRepository.findOne({ where: { id } });
+  async getUserById(id: string): Promise<User | null> {
+    return this.userRepository.findOne({
+      where: { id },
+      select: {
+        id: true,
+        userName: true,
+        email: true,
+        userType: true,
+      },
+    });
   }
 
-  async createUser(userDto: CreateUserDto) {
-    // Check Firebase Auth for existing email
+  // Create new user: DB + Firebase (with custom claims)
+  async createUser(userDto: CreateUserDto): Promise<User> {
+    // Check Firebase for existing user by email
     try {
       const existingFirebaseUser = await getAuth().getUserByEmail(
         userDto.email,
       );
-
-      // If found, assume registration should not proceed
       if (existingFirebaseUser) {
         throw authExceptions.userAlreadyExists;
       }
-    } catch (error) {
-      // If user not found in Firebase, continue registration
+    } catch (error: any) {
       if (error.code !== 'auth/user-not-found') {
-        // Unexpected Firebase error
-        throw systemExceptions.userAlreadyExists(
-          'Firebase error: ' + error.message,
-        );
+        throw systemExceptions.userAlreadyExists('Firebase: ' + error.message);
       }
+      // User not found - OK to proceed
     }
-    const user = this.userRepository.create(userDto);
-    return this.userRepository.save(user);
+
+    // Hash the password
+    const hashedPassword = await argon2.hash(userDto.password);
+
+    // Save user to your DB
+    const user = this.userRepository.create({
+      ...userDto,
+      password: hashedPassword,
+    });
+    const savedUser = await this.userRepository.save(user);
+
+    // Add user to Firebase Auth
+    let firebaseUser;
+    try {
+      firebaseUser = await getAuth().createUser({
+        email: savedUser.email,
+        password: userDto.password,
+        displayName: savedUser.userName,
+      });
+    } catch (error: any) {
+      throw systemExceptions.userAlreadyExists(
+        'Firebase createUser: ' + error.message,
+      );
+    }
+
+    // Set custom claim for userType
+    try {
+      await getAuth().setCustomUserClaims(firebaseUser.uid, {
+        userType: savedUser.userType,
+      });
+    } catch (error: any) {
+      throw new Error(`Failed to set Firebase custom claims: ${error.message}`);
+    }
+
+    return savedUser;
   }
 
-  async updateUser(id: string, userDto: Partial<User>) {
+  // Update user: DB + Firebase (and custom claims if userType changed)
+  async updateUser(id: string, userDto: Partial<User>): Promise<User | null> {
     const existingUser = await this.userRepository.findOne({ where: { id } });
     if (!existingUser) {
-      throw userExceptions.UserNotFound; // Your custom error
+      throw userExceptions.UserNotFound;
     }
 
-    // Lookup Firebase user by email
+    // Lookup Firebase user by previous email
     let firebaseUser;
     try {
       firebaseUser = await getAuth().getUserByEmail(existingUser.email);
-    } catch (error) {
+    } catch (error: any) {
       if (error.code === 'auth/user-not-found') {
-        throw userExceptions.FirebaseUserNotFound; // Optional: Your own error
+        throw userExceptions.FirebaseUserNotFound;
       }
       throw new Error(`Failed to fetch Firebase user: ${error.message}`);
     }
 
+    // Prepare Firebase update
     const updateFirebaseData: any = {};
-
     if (userDto.email && userDto.email !== existingUser.email) {
       updateFirebaseData.email = userDto.email;
     }
-
     if (userDto.userName && userDto.userName !== existingUser.userName) {
       updateFirebaseData.displayName = userDto.userName;
     }
-
     if (userDto.password) {
       updateFirebaseData.password = userDto.password;
     }
-
+    // Apply changes to Firebase User
     if (Object.keys(updateFirebaseData).length) {
       try {
         await getAuth().updateUser(firebaseUser.uid, updateFirebaseData);
-      } catch (error) {
-        // Fallback if no exception helper exists
+      } catch (error: any) {
         throw new Error(`Firebase update failed: ${error.message}`);
       }
     }
 
-    // Hash password before saving
+    // If userType changed, set custom claim (even if not changed, you can refresh claim here)
+    if (userDto.userType && userDto.userType !== existingUser.userType) {
+      try {
+        await getAuth().setCustomUserClaims(firebaseUser.uid, {
+          userType: userDto.userType,
+        });
+      } catch (error: any) {
+        throw new Error(
+          `Failed to update Firebase custom claims: ${error.message}`,
+        );
+      }
+    }
+
+    // Hash password before saving in local DB
     if (userDto.password) {
       userDto.password = await argon2.hash(userDto.password);
     }

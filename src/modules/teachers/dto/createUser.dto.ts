@@ -8,7 +8,7 @@ export class CreateUserDto {
     type: 'string',
   })
   @IsString()
-  userName: string;
+  name: string;
 
   @ApiProperty({
     name: 'email',
@@ -18,11 +18,25 @@ export class CreateUserDto {
   email: string;
 
   @ApiProperty({
-    name: 'password',
+    name: 'fullAddress',
     type: 'string',
   })
   @IsString()
-  password: string;
+  fullAddress: string;
+
+  @ApiProperty({
+    name: 'city',
+    type: 'string',
+  })
+  @IsString()
+  city: string;
+
+  @ApiProperty({
+    name: 'phone',
+    type: 'string',
+  })
+  @IsString()
+  phone: string;
 
   @ApiProperty({
     name: 'userType',

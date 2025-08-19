@@ -23,10 +23,9 @@ export default class StaffGuard implements CanActivate {
     try {
       const userData = await getAuth().verifyIdToken(token, false);
 
-
-      // if (userData.userType !== AuthUserType.STAFF) {
-      //   throw new ForbiddenException('User is not staff');
-      // }
+      if (userData.userType !== AuthUserType.STAFF) {
+        throw new ForbiddenException('User is not staff');
+      }
 
       // Attach user data to request for later use
       request.user = userData;
