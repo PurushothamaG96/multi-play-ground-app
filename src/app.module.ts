@@ -7,6 +7,7 @@ import envConfiguration from './config/configuration';
 import { AuthModule } from './modules/auth/auth.module';
 import { ParentStudentModule } from './modules/parent-student/parent-student.module';
 import { UserModule } from './modules/user/user.module';
+import { TeachersModule } from './modules/teachers/teachers.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { UserModule } from './modules/user/user.module';
     AuthModule,
     ParentStudentModule,
     UserModule,
+    TeachersModule
   ],
   controllers: [AppController],
   providers: [AppService],

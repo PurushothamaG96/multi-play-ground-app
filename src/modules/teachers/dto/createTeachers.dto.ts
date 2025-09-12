@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsEnum, IsString } from 'class-validator';
 import { USER_TYPE } from 'src/interfaces/user';
 
-export class CreateUserDto {
+export class CreateTeacherDto {
   @ApiProperty({
     name: 'userName',
     type: 'string',

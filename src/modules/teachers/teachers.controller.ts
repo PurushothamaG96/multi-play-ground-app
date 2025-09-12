@@ -19,6 +19,7 @@ import {
 } from '@nestjs/swagger';
 import { TeachersService } from './teachers.service';
 import Staff from '../../entities/staff.entity';
+import { CreateTeacherDto } from './dto/createTeachers.dto';
 
 @ApiTags('Teachers')
 @Controller('teachers')
@@ -27,9 +28,9 @@ export class TeachersController {
 
   @Post()
   @ApiOperation({ summary: 'Create teacher' })
-  @ApiBody({ type: Staff })
+  @ApiBody({ type: CreateTeacherDto })
   @ApiResponse({ status: 201, description: 'Teacher created', type: Staff })
-  create(@Body() staffDto: Partial<Staff>) {
+  create(@Body() staffDto: CreateTeacherDto) {
     return this.teachersService.createTeacher(staffDto);
   }
 
@@ -47,7 +48,13 @@ export class TeachersController {
     @Query('page', ParseIntPipe) page: number = 1,
     @Query('limit', ParseIntPipe) limit: number = 10,
   ) {
-    return this.teachersService.fetchTeachers({ name, email, city, page, limit });
+    return this.teachersService.fetchTeachers({
+      name,
+      email,
+      city,
+      page,
+      limit,
+    });
   }
 
   @Get(':id')

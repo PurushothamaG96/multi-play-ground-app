@@ -10,4 +10,4 @@ import Staff from '../../entities/staff.entity';
   providers: [TeachersService],
   exports: [TeachersService],
 })
-export class UserModule {}
+export class TeachersModule {}
