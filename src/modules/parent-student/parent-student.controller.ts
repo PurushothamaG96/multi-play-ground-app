@@ -9,8 +9,17 @@ import {
   Put,
   Delete,
   UseGuards,
+  Query,
+  ParseIntPipe,
 } from '@nestjs/common';
-import { ApiTags, ApiBody, ApiResponse, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiBody,
+  ApiResponse,
+  ApiOperation,
+  ApiBearerAuth,
+  ApiQuery,
+} from '@nestjs/swagger';
 import { ParentStudentService } from './parent-student.service';
 import {
   CreateParentDto,
@@ -22,10 +31,11 @@ import Parent from '../../entities/parent.entity';
 import Student from '../../entities/student.entity';
 import StaffGuard from '../../guard/staff.guard';
 
+
 @ApiBearerAuth()
 @UseGuards(StaffGuard)
 @ApiTags('Parent-Student Management')
-@Controller('parent-student')
+@Controller('students')
 export class ParentStudentController {
   constructor(private readonly service: ParentStudentService) {}
 
@@ -73,12 +83,35 @@ export class ParentStudentController {
   }
 
   // STUDENT CRUD
-  @Post('students')
+  @Post()
   @ApiOperation({ summary: 'Create a student' })
   @ApiBody({ type: CreateStudentDto })
   @ApiResponse({ status: 201, description: 'Student created', type: Student })
   createStudent(@Body() dto: CreateStudentDto) {
     return this.service.createStudent(dto);
+  }
+
+  @Get()
+  @ApiOperation({ summary: 'Get all teachers with filters' })
+  @ApiQuery({ name: 'name', required: false })
+  @ApiQuery({ name: 'email', required: false })
+  @ApiQuery({ name: 'city', required: false })
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  fetchTeachers(
+    @Query('name') name?: string,
+    @Query('email') email?: string,
+    @Query('city') city?: string,
+    @Query('page', ParseIntPipe) page: number = 1,
+    @Query('limit', ParseIntPipe) limit: number = 10,
+  ) {
+    return this.service.fetchStudents({
+      name,
+      email,
+      city,
+      page,
+      limit,
+    });
   }
 
   @Get('students/:id')

@@ -6,6 +6,10 @@ import { GENDER } from '../interfaces/system';
 
 @Entity('students')
 export default class Student extends Base {
+  @ApiProperty({ example: 'uuid' })
+  @Column({ type: 'uuid' })
+  parentId: string;
+
   @ApiProperty({ example: 'uuid-of-parent' })
   @ManyToOne(() => Parent, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'parentId' })

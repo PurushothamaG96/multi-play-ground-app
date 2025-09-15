@@ -8,8 +8,10 @@ import {
   IsEnum,
   IsUUID,
   IsInt,
+  ValidateNested,
 } from 'class-validator';
 import { GENDER, PARENT_RELATION } from '../../../interfaces/system';
+import { Type } from 'class-transformer';
 
 // --- PARENT DTOs ---
 export class CreateParentDto {
@@ -29,7 +31,10 @@ export class UpdateParentDto extends CreateParentDto {}
 
 // --- STUDENT DTOs ---
 export class CreateStudentDto {
-  @ApiProperty() @IsUUID() parentId: string;
+  @ApiProperty({ type: () => CreateParentDto })
+  @ValidateNested({ each: true })
+  @Type(() => CreateParentDto)
+  parent: CreateParentDto;
   @ApiProperty() @IsString() firstName: string;
   @ApiProperty() @IsString() middleName: string;
   @ApiProperty() @IsString() lastName: string;
