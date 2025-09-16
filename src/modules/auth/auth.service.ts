@@ -34,7 +34,17 @@ export class AuthService {
       return await this.userRepository.save(user);
     } catch (error) {
       console.error(error);
-      throw new Error('Failed to register user');
+      throw error;
+    }
+  }
+
+  public async deleteUser(id: string): Promise<boolean> {
+    try {
+      await this.userRepository.delete({ id });
+      return true;
+    } catch (error) {
+      console.log(error);
+      throw error;
     }
   }
 }

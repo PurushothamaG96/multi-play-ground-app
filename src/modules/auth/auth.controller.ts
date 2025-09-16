@@ -86,11 +86,15 @@ export class AuthController {
       password: hashedPassword,
     });
 
-    await getAuth().createUser({
-      email: newUser.email,
-      password: registerDto.password,
-      displayName: newUser.userName,
-    });
+    try {
+      await getAuth().createUser({
+        email: newUser.email,
+        password: registerDto.password,
+        displayName: newUser.userName,
+      });
+    } catch (error) {
+      await this.authService.deleteUser(newUser.id);
+    }
 
     return { message: true };
   }
