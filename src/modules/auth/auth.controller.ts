@@ -7,6 +7,7 @@ import * as argon2 from 'argon2';
 import { getAuth } from 'firebase-admin/auth';
 import { ApiBody } from '@nestjs/swagger';
 import { RegisterDto } from './dto/register.dto';
+import { PasswordResetDto } from './dto/password-reset.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -97,5 +98,21 @@ export class AuthController {
     }
 
     return { message: true };
+  }
+
+  @ApiBody({ type: PasswordResetDto, description: 'Reset password data' })
+  @Post('reset-password')
+  async resetPassword(@Body() payload: PasswordResetDto) {
+    // Handle password reset logic here
+    const { email } = payload;
+    // Call the auth service to perform password reset
+    const user = await this.authService.getUser(email);
+    if (!user) {
+      throw authExceptions.userNotFound({ email });
+    }
+    try {
+    } catch (error) {
+      throw error;
+    }
   }
 }

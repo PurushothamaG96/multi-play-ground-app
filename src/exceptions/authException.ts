@@ -53,3 +53,9 @@ export const invalidPhoneNumber = (payload = {}) =>
 
 export const invalidToken = (payload = {}) =>
   new CustomHttpException('Invalid Token', HttpStatus.FORBIDDEN, payload);
+
+export const userNotFound = (payload = {}) =>
+  new CustomHttpException('User not found', HttpStatus.NOT_FOUND, payload);
+
+export const invalidCredentials = (payload = {}) =>
+  new CustomHttpException('Invalid Credentials', HttpStatus.FORBIDDEN, payload);
