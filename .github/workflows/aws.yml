@@ -27,4 +27,4 @@ jobs:
         run: docker rm -f multi-playground || true
 
       - name: run new container
-        run: docker run -d -p 3000:3000 --name multi-playground ${{ secrets.DOCKER_USERNAME }}/multi-playground:latest
+        run: docker run -d -p 9200:9200 --name multi-playground ${{ secrets.DOCKER_USERNAME }}/multi-playground:latest
