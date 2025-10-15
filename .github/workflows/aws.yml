@@ -7,6 +7,11 @@ jobs:
       - name: checkout source code
         uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744
 
+      - name: Free up disk space
+        run: |
+          docker system prune -af
+          sudo rm -rf /usr/local/lib/android /opt/ghc /usr/share/dotnet
+
       - name: login to docker hub
         run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
 
