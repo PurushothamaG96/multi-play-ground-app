@@ -1,24 +1,30 @@
-name: School Management System
 on: [push, pull_request]
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: checkout source code
         uses: actions/checkout@v2
+
       - name: login to docker hub
-        uses: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-      - name: build and push docker image
-        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/multi-playground:latest
+        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: build docker image
+        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/multi-playground:latest .
+
       - name: push image to docker hub
         run: docker push ${{ secrets.DOCKER_USERNAME }}/multi-playground:latest
+
   deploy:
     needs: build
     runs-on: [aws-ec2]
     steps:
       - name: pull image from docker hub
         run: docker pull ${{ secrets.DOCKER_USERNAME }}/multi-playground:latest
-      - name: Delete old container
+
+      - name: delete old container
         run: docker rm -f multi-playground || true
-      - name: Run new container
+
+      - name: run new container
         run: docker run -d -p 3000:3000 --name multi-playground ${{ secrets.DOCKER_USERNAME }}/multi-playground:latest
