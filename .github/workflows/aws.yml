@@ -10,7 +10,6 @@ jobs:
       - name: Free up disk space
         run: |
           docker system prune -af
-          sudo rm -rf /usr/local/lib/android /opt/ghc /usr/share/dotnet
 
       - name: login to docker hub
         run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
